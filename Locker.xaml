@@ -1,0 +1,97 @@
+﻿<Window x:Class="WorkWinLocker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Блокировщик" Height="350" Width="525" Background="#00000000" ResizeMode="NoResize" Closed="Window_Closed" KeyDown="Window_KeyDown" WindowStartupLocation="CenterScreen" AllowsTransparency="True" WindowStyle="None">
+
+    <Window.Resources>
+        <ControlTemplate x:Key="GlassButton" TargetType="{x:Type Button}">
+            <ControlTemplate.Resources>
+                <Storyboard x:Key="Timeline1">
+                    <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="glow" Storyboard.TargetProperty="(UIElement.Opacity)">
+                        <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+                <Storyboard x:Key="Timeline2">
+                    <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="glow" Storyboard.TargetProperty="(UIElement.Opacity)">
+                        <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+            </ControlTemplate.Resources>
+            <Border x:Name="OutBorder" BorderBrush="Transparent" BorderThickness="1,1,1,1" CornerRadius="4,4,4,4">
+                <Border x:Name="border" Background="#7F000000" BorderBrush="#FF000000" BorderThickness="1,1,1,1" CornerRadius="4,4,4,4">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0.507*"/>
+                            <RowDefinition Height="0.493*"/>
+                        </Grid.RowDefinitions>
+                        <Border Opacity="0" HorizontalAlignment="Stretch" x:Name="glow" Width="Auto" Grid.RowSpan="2" CornerRadius="4,4,4,4">
+                            <Border.Background>
+                                <RadialGradientBrush>
+                                    <RadialGradientBrush.RelativeTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="1.702" ScaleY="2.243"/>
+                                            <SkewTransform AngleX="0" AngleY="0"/>
+                                            <RotateTransform Angle="0"/>
+                                            <TranslateTransform X="-0.368" Y="-0.152"/>
+                                        </TransformGroup>
+                                    </RadialGradientBrush.RelativeTransform>
+                                    <GradientStop Color="#B28DBDFF" Offset="0"/>
+                                    <GradientStop Color="#008DBDFF" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <TextBlock x:Name="ContentText" Foreground="White" Text="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Grid.RowSpan="2"/>
+                        <!--<ContentPresenter  HorizontalAlignment="Center" VerticalAlignment="Center" Width="Auto" Grid.RowSpan="2" OpacityMask="Black"/>-->
+                        <Border HorizontalAlignment="Stretch" Margin="0,0,0,0" x:Name="shine" Width="Auto" CornerRadius="4,4,0,0">
+                            <Border.Background>
+                                <LinearGradientBrush EndPoint="0.494,0.889" StartPoint="0.494,0.028">
+                                    <GradientStop Color="#99FFFFFF" Offset="0"/>
+                                    <GradientStop Color="#33FFFFFF" Offset="1"/>
+                                    <GradientStop Color="#96FFFFFF"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" TargetName="shine" Value="0.4"/>
+                    <Setter Property="Background" TargetName="border" Value="#CC000000"/>
+                    <Setter Property="Visibility" TargetName="glow" Value="Hidden"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" TargetName="ContentText" Value="Gray"/>
+                    <Setter Property="BorderBrush" TargetName="OutBorder" Value="Gray"/>
+                    <Setter Property="Visibility" TargetName="glow" Value="Hidden"/>
+                    <Setter Property="Visibility" TargetName="shine" Value="Hidden"/>
+                    <Setter Property="BorderBrush" TargetName="border" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource Timeline1}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard x:Name="Timeline2_BeginStoryboard" Storyboard="{StaticResource Timeline2}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Windows" Key="V" Command="{Binding setExitVisible}"/>
+    </Window.InputBindings>
+
+    <Grid>
+        <Rectangle Name="BackGround" Fill="#E5000000" Stroke="Black" RadiusX="5" RadiusY="5"/>
+        <Button Content="Выход" x:Name="btnExit" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Width="75" Height="29.96" Click="btnExit_Click" Template="{DynamicResource GlassButton}" Visibility="Hidden"/>
+        <Button Content="Продлить работу" x:Name="btnContinue" HorizontalAlignment="Right" Margin="0,10,90,0" VerticalAlignment="Top" Width="125" Height="30" Template="{DynamicResource GlassButton}" Click="btnContinue_Click" Visibility="Hidden"/>
+        <Label Margin="10,45,10,10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+            <TextBlock x:Name="Message" Text="" TextAlignment="Center" Foreground="#FF10E049" FontSize="36" FontFamily="OCR A Std"/>
+        </Label>
+        <Button x:Name="btnStart"  Height="90" Width="180" Template="{DynamicResource GlassButton}" Content="Старт" Click="btnStart_Click" FontSize="36"/>
+        <Button x:Name="Close" Content="Х" HorizontalAlignment="Right" Height="25" VerticalAlignment="Top" Width="25" Template="{DynamicResource GlassButton}" Click="Close_Click"/>
+
+    </Grid>
+</Window>
